@@ -1,6 +1,5 @@
 # Import python packages
 import streamlit as st
-from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark.functions import col, when_matched
 
 # Write directly to the app
@@ -18,7 +17,8 @@ option = st.selectbox(
 )
 
 st.write("Your favorite fruit is:", option)
-session = get_active_session()
+cnx = st.connection("snowflake)
+session = cnx.session()
 
 my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
 #st.dataframe(data=my_dataframe, use_container_width=True)
@@ -31,7 +31,7 @@ if ingredient_list:
     st.write(ingredients_string)
 
     my_insert_stmt = """ insert into smoothies.public.orders 
-            values ('""" + ingredients_string + """', '"""+ name_on_order + """', 'False')"""
+            values ('""" + ingredients_string + """', '"""+ name_on_order + """', 'False', '2')"""
     st.write(my_insert_stmt)
     if ingredients_string:
         session.sql(my_insert_stmt).collect()
